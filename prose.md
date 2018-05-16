@@ -1,13 +1,3 @@
----
-title: "Does Airbnb Cause Rent Prices to Increase?"
-author: "SaiArvind Ganganapalle"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # Introduction
 
 ## Motivation
