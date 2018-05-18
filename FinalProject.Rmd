@@ -18,9 +18,17 @@ In [season 2 episode 6](https://www.imdb.com/title/tt4498796/?ref_=ttep_ep6) of 
 
 [Airbnb](https://www.airbnb.com/) is an online marketplace and hospitality service for people to lease or rent short-term lodging. Most regular apartment renting is done through leases which last over a long period of time, usually six months to one year. Airbnbs usually only last a few days to a couple of weeks as it is an alternative to hotels and traditional bed and breakfasts place. Because of the shorter length of stay, Airbnbs are more expensive per night than the per night equivalent of a month's rent for a long term apartment lease. So if Airbnbs start cropping up in below middle class neighborhoods and middle class people rent out those Airbnbs, could that influence landlord's to increase rent prices as the landlords see there are people willing to pay more to rent their property? 
 
-### Question - come back to methodology
+### Question and Methodology - come back to methodology
 
-As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. The way we will be 
+As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. So we will subtract the apartment rent price from the Airbnb price (i.e. Airbnb price - aparment price) and looking at the change in differences over a period of time. See the table below for an example.  
+
+| Date  | Apt.  | Airbnb  | Difference |
+|---|---|---|---|
+| 2015  | 100  | 300  | 200  |
+| 2016 | 200  | 300  | 100  |
+| 2017  | 300 | 350  |  50 |
+
+From the table above, we can the difference column getting smaller due the increase in the apartment price even though the Airbnb stayed fairly steady.
 
 ### Data
 
@@ -32,7 +40,7 @@ I) Data Curation
 	i) Data Collection
 	ii) Data Processing
 II) Exploratory Data Analysis
-III) Machine Learning
+III) Hypothesis Testing and Machine Learning
 IV) Conclusions
 V) Further Reading
 
@@ -78,8 +86,6 @@ airbnb_data_links <- unique(airbnb_data_links) # removes duplicate links
 airbnb_data_links <- airbnb_data_links[-28] # remove the Nov 20 link located at index 28
 
 airbnb_data_links %>% head()
-
-two_links <- c("http://data.insideairbnb.com/united-states/ny/new-york-city/2015-01-01/visualisations/listings.csv", "http://data.insideairbnb.com/united-states/ny/new-york-city/2016-04-03/visualisations/listings.csv")
 ```
 
 Now that we have all the links to the zipped CSV files, we can download them into a directory. We will write a function that extracts the date from the link, parses the date using `lubridate`, uses the parsed date to create a new file, and downloads the CSV file into the newly created file.
@@ -92,7 +98,7 @@ library(lubridate)
 
 # invisible() just suppresses output
 # use the airbnb_data_link from above
-invisible(sapply(airbnb_data_links, function(link) {
+invisible(sapply(two_links, function(link) {
 	extracted_date <- str_extract(link,"\\d{4}-\\d{2}-\\d{2}") # extract the date from the link
 	parsed_date <- ymd(extracted_date) # parse date with lubridate
 	
@@ -214,14 +220,159 @@ Now we have one data frame with nightly prices for an apartment and an Airbnb fo
 
 Let's plot the rent prices and Airbnb prices data separately to see how each behaves over three years.
 
+First, we will plot the apartment rent price vs the date.
 ```{r plot_rent, eval=TRUE}
+library(tidyr)
+library(ggplot2)
 
+rent_plot <- final_df %>% 
+	ggplot(aes(x=Date,y=NightlyRentPrice)) +
+	geom_point() +
+	geom_smooth() +
+	xlab("Date") + 
+	ylab("Apartment Rent Price Per Night") +
+	ggtitle("Median Nightly Apartment Rent Price in New York City Over Time")
+
+rent_plot
 ```
 
-## III. Machine Learning
+The rent plot shows a generally increasing trend in apartment rent prices. There are very noticeable spikes in prices during the middle of each year. According to [this Apartment Guide article](https://www.apartmentguide.com/blog/is-there-an-ideal-season-to-rent-an-apartment/), many Americans move between May and September of a given year. This is due to children getting out of school, college students graduating, and the better moving weather. So landlords can charge more during these months. The rent plot clearly shows this trend with the spikes in prices during the middle of the year.
+
+Now let's plot the Airbnb rent price vs the date.
+```{r plot_airbnb, eval=TRUE}
+library(tidyr)
+library(ggplot2)
+
+airbnb_plot <- final_df %>% 
+	ggplot(aes(x=Date,y=NightlyAirbnbPrice)) +
+	geom_point() +
+	geom_smooth() +
+	xlab("Date") + 
+	ylab("Airbnb Price Per Night") +
+	ggtitle("Median Nightly Airbnb Price in New York City Over Time")
+
+airbnb_plot
+```
+
+The Airbnb median nightly rent price plot is very surprising to me. The plot shows a decreasing trend in prices over the years, but overall higher prices than apartments. However, for each year there are periods where the price plateaus and holds steady. For example, the second of half of 2015 has a steady price of \$80 per night. For all of 2016, the median price is \$75. For the second half of 2017, the price is $70 per night. The overall decrease in price could be due to the fact that Airbnb is growing. According to [this Recode article](https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry), the number of travelers who used Airbnb in the last 12 months went from 12% in 2014 to an estimated 25% in 2017. Due to Airbnb's growth and demand, there will be more listings which means more competition between listings to get customers. As the supply begans to reach the demand level, the prices become more competitive leading to lower prices. The plateaus could be due to same effects which cause mid-year spikes in prices for apartments. For the first half of the year, prices start fluctuating as people start looking for places to stay during the summer. Then prices steady after the summer, much like the return to beginning-of-the-year prices for apartments.
+
+Now let's graph the difference between the Airbnb price and apartment price. First, let's create a new column for the differnce between the Airbnb and apartment price.
+```{r create_column_diff, eval=TRUE}
+diff_df <- final_df %>% 
+	mutate(diff = NightlyAirbnbPrice - NightlyRentPrice)
+
+diff_df
+```
+
+Let's graph the differences over time.
+```{r plot_diff, eval=TRUE}
+library(tidyr)
+library(ggplot2)
+
+diff_plot <- diff_df %>% 
+	ggplot(aes(x=Date,y=diff)) +
+	geom_point() +
+	geom_smooth() +
+	xlab("Date") + 
+	ylab("Difference in Price Per Night") +
+	ggtitle("Nightly Difference in Price for an Airbnb and Apartment Over Time")
+
+diff_plot
+```
+
+The differences plot shows a decreasing trend over time. The differences between the Airbnb price and apartment price grows smaller over time. This leads me to believe that Airbnb has an influence on the apartment rent prices since the prices grow closer to each other (leading to smaller difference). However, one possibility to consider is the opposite effect - that Airbnb prices are getting lower over time closer to apartment rent prices. If apartment rent prices stay steady, but Airbnb prices decrease then the difference between the two would lower. This is the same difference if Airbnb stayed steady but apartment prices increased. For now I am going test if Airbnb has an effect on apartment prices.
+
+As the data is recent, I do not feel there is a need to standardize or account for inflation.
+
+## III. Hypothesis Testing and Machine Learning
+
+### Hypothesis Testing
+
+We are going to test if Airbnb has an effect on apartment prices with hypothesis testing on the differences in the prices of Airbnb and apartments.
+
+Our null hypothesis will be that Airbnb _does not_ have an effect on apartment prices, so the difference in prices would be zero: $H_o = 0$. The alternative hypothesis will be that Airbnb _does_ have an effect on apartment prices, so difference in prices would be positive: $H_a > 0$. We will be using the t-test to test our hypothesis. We are using the t-test because the population variance is unknown and the sample size is small. However, the t-test also assumes that the underlying variables come from a normal distribution. We can check by looking at the normal probabilty plot (NPP) and the reference line.
+
+```{r normality_test, eval=TRUE}
+qqnorm(diff_df$diff)
+qqline(diff_df$diff)
+```
+
+From the NPP, we can see that the data is linear which indicates that data follows a normal distribution. Now that normality assumption is met for the t-test, let's perform the test.
+
+```{r t-test, eval=TRUE}
+t_test <- t.test(diff_df$diff, alternative = "g")
+t_test
+```
+
+Since the p-value is less than 0.05, the null hypothesis is rejected. So we know that Airbnb has an effect on apartment prices as the alternative hypothesis was not rejected.
+
+
+### Machine Learning
+
+Now let's attempt to come with a linear regression model for the relationship between apartment prices and Airbnb prices. We want to see the effect of Airbnb on apartment prices, so the relationship is modeled as such: $apt \ price = \beta_0 + \beta_1 * Airbnb \ price$. Since both variables are numeric and continous, and this is not a classification problem, we can use a linear regression model.
+
+```{r ml, eval=TRUE}
+library(broom)
+library(knitr)
+
+# bulid the linear model and pipe into the broom::tidy() function
+price_model <- lm(NightlyRentPrice ~ NightlyAirbnbPrice, data = diff_df)
+# broom::tidy() constructs a data frame that summarizes the model's statistical findings
+price_model %>% tidy() %>% kable()
+```
+
+Here are the mean prices of each type of room over the 3 years:
+```{r mean_prices, eval=TRUE}
+paste("Mean nightly apartment rent price: ", mean(diff_df$NightlyRentPrice))
+paste("Mean nightly Airbnb price: ", mean(diff_df$NightlyAirbnbPrice))
+```
+
+The linear model tells us that if the Airbnb price is \$0, then the apartment rent price would be about \$75. We also found a statistically significant relationship between the Airbnb price and apartment price. On average, an apartment is about $0.075 cheaper per night than an Airbnb. This apartment price is more expensive than the mean nightly apartment over the course of 3 years and is very close in price to traditionally more expensive Airbnb option.
+
+Let's also take a look at the fit of the model by calculating the $R^2$ measure based on the total sum of square and residual sum of squares.
+```{r ml_fit, eval=TRUE}
+library(broom)
+library(knitr)
+
+# broom:glance() constructs a concise one-row summary of the model
+price_model %>% glance() %>% kable()
+```
+
+The $R^2$ is positive but weak indicating as Airbnb prices increase, apartment rent prices increase. However, due the low $R^2$ value, a linear model may not be best fit to measure the relationship.
+
+Let's check the residual plots to confirm the linearity (or lack thereof) of the relationship.
+```{r ml_resid, eval=TRUE}
+library(broom)
+library(knitr)
+
+# broom::augment() adds predictions, residuals, and cluster assignments to original data that was modeled
+aug_price_model <- price_model %>% augment()
+aug_price_model %>% head() %>% kable()
+
+resid_plot <- aug_price_model %>% 
+	ggplot(aes(x=.fitted, y=.resid)) +
+	geom_point() + 
+    geom_smooth() +
+    labs(x="fitted", y="residual")
+
+resid_plot
+```
+
+As the residual plot shows, there is some non-linearity as indicated by the slight curves near the residual = 0 line. However, the there is no major clustering of points and very discernible patterns in the data. So a linear model is somewhat accurate in assessing the relationship between Airbnb price and apartment price.
 
 ## IV. Conclusion
 
+Knowing how new technology affects existing people who may not be able to adopt the new technology is important. Technology should be helping to improve people's lives whilst not hurting others. In this situation, higher Airbnb costs possibly leads to higher apartment prices which may displace those living in the apartment already. This displacement of people could lead to sweeping demographic changes and cause unforeseen side effects. This analysis is beneficial to data science as it allows us to explore how data science can be applied to find the consequences of new technology.
+
 ## V. Further Reading
 
-### Can we predict monthly rent prices from Airbnb (or vice versa)?
+See these sources for further reading:
+
+
+
+### Sources
+
+- Airbnb
+- Inside Airbnb
+- Apartment List
+- Recode

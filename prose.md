@@ -10,7 +10,13 @@ In [season 2 episode 6](https://www.imdb.com/title/tt4498796/?ref_=ttep_ep6) of 
 
 ## Question - come back to methodology
 
-As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. The way I will be 
+As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. The way I will be
+
+| Date  | Apt.  | Airbnb  | Difference |
+|---|---|---|---|
+| 2015  | 100  | 300  | 200  |
+| 2016 | 200  | 300  | 100  |
+| 2017  | 300 | 350  |  50 | 
 
 ## Data
 
