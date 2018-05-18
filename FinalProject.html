@@ -309,32 +309,32 @@ $(document).ready(function () {
 </div>
 
 
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<div id="motivation" class="section level2">
-<h2>Motivation</h2>
-<p>In <a href="https://www.imdb.com/title/tt4498796/?ref_=ttep_ep6">season 2 episode 6</a> of Netflix’s <a href="https://www.netflix.com/title/80025384"><em>Unbreakable Kimmy Schmidt</em></a>, Kimmy Schmidt (the main character) and her roommate Titus Andromedon rent out their apartment on Airbnb. This action worries their landlord, Lillian Kaushtupper, as Lillian believes that Airbnbs only attract affluent hipsters who will gentrify her beloved lower class New York City neighborhood. While Lillian’s immediate correlation of Airbnb to gentrification is an overreaction, it made wonder if Airbnb can lead to an increase in rent prices of surrounding apartments.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<div id="motivation" class="section level3">
+<h3>Motivation</h3>
+<p>In <a href="https://www.imdb.com/title/tt4498796/?ref_=ttep_ep6">season 2 episode 6</a> of Netflix’s <a href="https://www.netflix.com/title/80025384"><em>Unbreakable Kimmy Schmidt</em></a>, Kimmy Schmidt (the main character) and her roommate Titus Andromedon rent out their apartment on Airbnb. This action worries their landlord, Lillian Kaushtupper, as Lillian believes that Airbnbs only attract affluent hipsters who will gentrify her beloved lower class New York City neighborhood. While Lillian’s immediate correlation of Airbnb to gentrification is an overreaction, it made me wonder if Airbnb can lead to an increase in rent prices of surrounding apartments.</p>
 </div>
-<div id="background" class="section level2">
-<h2>Background</h2>
+<div id="background" class="section level3">
+<h3>Background</h3>
 <p><a href="https://www.airbnb.com/">Airbnb</a> is an online marketplace and hospitality service for people to lease or rent short-term lodging. Most regular apartment renting is done through leases which last over a long period of time, usually six months to one year. Airbnbs usually only last a few days to a couple of weeks as it is an alternative to hotels and traditional bed and breakfasts place. Because of the shorter length of stay, Airbnbs are more expensive per night than the per night equivalent of a month’s rent for a long term apartment lease. So if Airbnbs start cropping up in below middle class neighborhoods and middle class people rent out those Airbnbs, could that influence landlord’s to increase rent prices as the landlords see there are people willing to pay more to rent their property?</p>
 </div>
-<div id="question---come-back-to-methodology" class="section level2">
-<h2>Question - come back to methodology</h2>
-<p>As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. The way I will be</p>
+<div id="question---come-back-to-methodology" class="section level3">
+<h3>Question - come back to methodology</h3>
+<p>As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. The way we will be</p>
 </div>
-<div id="data" class="section level2">
-<h2>Data</h2>
+<div id="data" class="section level3">
+<h3>Data</h3>
 <p>In order to carry out this experiment, I need historical rent data for apartments (which I will call rent data) in New York City and historical data for Airbnb (which I will call Airbnb data) prices in New York City. The historical rent data will be from <a href="https://www.apartmentlist.com/rentonomics/rental-price-data/">Apartment List</a> and historical Airbnb data will be from <a href="http://insideairbnb.com/get-the-data.html">Inside Airbnb</a>.</p>
+</div>
 </div>
 <div id="steps" class="section level2">
 <h2>Steps</h2>
 <ol style="list-style-type: upper-roman">
 <li>Data Curation
 <ol style="list-style-type: lower-roman">
-<li>Getting the data</li>
-<li>Cleaning the data</li>
-<li>Parsing the data</li>
+<li>Data Collection</li>
+<li>Data Processing</li>
 </ol></li>
 <li>Exploratory Data Analysis</li>
 <li>Machine Learning</li>
@@ -342,8 +342,260 @@ $(document).ready(function () {
 <li>Further Reading</li>
 </ol>
 </div>
-<div id="can-we-predict-monthly-rent-prices-from-airbnb-or-vice-versa" class="section level2">
-<h2>Can we predict monthly rent prices from Airbnb (or vice versa)?</h2>
+<div id="i.-data-curation" class="section level2">
+<h2>I. Data Curation</h2>
+<div id="i.-data-collection" class="section level3">
+<h3>i. Data Collection</h3>
+<div id="getting-the-rent-data" class="section level4">
+<h4>Getting the Rent Data</h4>
+<p>The rent data from Apartment List is a single CSV file that can be downloaded from <a href="https://www.apartmentlist.com/rentonomics/rental-price-data/?">here</a>. Click on the <code>Select the Data Report to download</code> dropdown, select <code>City-Level Historic Data (2014-present)</code>, and click <code>DOWNLOAD FILE</code>. Save the path to the file in a variable.</p>
+<pre class="r"><code>rent_data_path &lt;- &quot;./Apartment-List-Rent-Data-City_2018-2.csv&quot;</code></pre>
+</div>
+<div id="getting-the-airbnb-data" class="section level4">
+<h4>Getting the Airbnb Data</h4>
+<p>The Airbnb data is spread out over multiple CSV files where each zipped CSV file contains data for a single month of Airbnb listings. We will get each file, unzip it, rename it, and store it a folder.</p>
+<p>First, we will get the raw HTML of the Airbnb data page.</p>
+<pre class="r"><code>airbnb_url &lt;- &quot;http://insideairbnb.com/get-the-data.html&quot;
+airbnb_html &lt;- paste(readLines(airbnb_url), collapse = &quot;\n&quot;)</code></pre>
+<pre><code>## Warning in readLines(airbnb_url): incomplete final line found on 'http://
+## insideairbnb.com/get-the-data.html'</code></pre>
+<p>Second, we need to extract all links to the zipped CSV files for New York City. We will be using the data file named <code>listings.csv</code> that contains summary information and metrics for listings in New York City. If we inspect a few of the <code>listings.csv</code> links (right click the link and click “Inspect”), we see the URL to the actual CSV file in the anchor tag’s href attribute. All of New York City’s CSV files’ URLs are in the same format with the date changed. More specifically, the format looks like this: <code>http://data.insideairbnb.com/united-states/ny/new-york-city/{YYYY}-{MM}-{DD}/data/listings.csv.gz</code>.</p>
+<p>So now we can build a regex and extract all the links that match the URL format for the CSV files using <code>stringr</code>. The regex <code>\d{4}-\d{2}-\d{2}</code> matches date strings in the YYYY-MM-DD format.</p>
+<pre class="r"><code>library(stringr)
+
+# create the link regex
+airbnb_link_regex &lt;- &quot;http://data\\.insideairbnb\\.com/united-states/ny/new-york-city/\\d{4}-\\d{2}-\\d{2}/visualisations/listings\\.csv&quot;
+
+# match all occurences of the regex in the raw HTML
+matched_data_links &lt;- str_match_all(airbnb_html, airbnb_link_regex)
+# get the vector of matched links
+airbnb_data_links &lt;- matched_data_links[[1]][,1]
+
+# Jan 2018 has duplicate links and Nov 2015 has two links from two days (Nov 1st and Nov 20th) in the month. 
+# We will get rid of the duplicate Jan 2018 link and use the first Nov 2015 link to keep consistent with the other months
+airbnb_data_links &lt;- unique(airbnb_data_links) # removes duplicate links
+airbnb_data_links &lt;- airbnb_data_links[-28] # remove the Nov 20 link located at index 28
+
+airbnb_data_links %&gt;% head()</code></pre>
+<pre><code>## [1] &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2018-03-04/visualisations/listings.csv&quot;
+## [2] &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2018-02-02/visualisations/listings.csv&quot;
+## [3] &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2018-01-10/visualisations/listings.csv&quot;
+## [4] &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2017-12-02/visualisations/listings.csv&quot;
+## [5] &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2017-11-01/visualisations/listings.csv&quot;
+## [6] &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2017-10-02/visualisations/listings.csv&quot;</code></pre>
+<pre class="r"><code>two_links &lt;- c(&quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2015-01-01/visualisations/listings.csv&quot;, &quot;http://data.insideairbnb.com/united-states/ny/new-york-city/2016-04-03/visualisations/listings.csv&quot;)</code></pre>
+<p>Now that we have all the links to the zipped CSV files, we can download them into a directory. We will write a function that extracts the date from the link, parses the date using <code>lubridate</code>, uses the parsed date to create a new file, and downloads the CSV file into the newly created file.</p>
+<pre class="r"><code># folder where all the unzipped CSV files will go
+airbnb_data_dir &lt;- &quot;./airbnbdata&quot;
+
+library(lubridate)
+
+# invisible() just suppresses output
+# use the airbnb_data_link from above
+invisible(sapply(airbnb_data_links, function(link) {
+    extracted_date &lt;- str_extract(link,&quot;\\d{4}-\\d{2}-\\d{2}&quot;) # extract the date from the link
+    parsed_date &lt;- ymd(extracted_date) # parse date with lubridate
+    
+    # create the new file name with the format YYYY-MM
+    tarfile_name &lt;- paste(year(parsed_date),month(parsed_date,abbr = FALSE, label = FALSE),sep = &quot;-&quot;)
+    
+    # create the new full file path along with the extension
+    tarfile_path &lt;- paste0(airbnb_data_dir,&quot;/&quot;,tarfile_name,&quot;.csv&quot;)
+    
+    file.create(tarfile_path) # create the file
+    download.file(link, tarfile_path) # download the file from the link into the file
+}))
+
+list.files(airbnb_data_dir) %&gt;% head()</code></pre>
+</div>
+</div>
+<div id="ii.-data-processing" class="section level3">
+<h3>ii. Data Processing</h3>
+<p>We eventually need a single data frame with entities as the months and the attributes as the rent price and Airbnb price.</p>
+<div id="processing-rent-data" class="section level4">
+<h4>Processing Rent Data</h4>
+<p>The single rent data CSV file contains the median rent price for different types of apartments for different U.S. cities. We will be using rent data from January 2015 to February 2018 for a 1 bedroom apartment in New York City. Even though there is rent information from January 2014, the Airbnb data only goes back until January 2015 so only the rent data from January 2015 will be used. Let’s read the CSV into a data frame.</p>
+<pre class="r"><code>library(dplyr)
+library(tidyr)
+
+rent_raw_data &lt;- read.csv(rent_data_path)
+rent_df &lt;- rent_raw_data</code></pre>
+<p>Now that the CSV is in a data frame, let us make it tidy. First, we will drop all irrelevant information. This means dropping all cities except for New York, dropping the type of locatino, and dropping all bedroom sizes except for 1 bedroom. We can also drop <code>Location</code>, <code>Location_Type</code>, and <code>Bedroom_Size</code> Then let’s rename the columns to only include the month and year written out using <code>rename_all</code> and <code>lubridate</code>.</p>
+<pre class="r"><code>nyc_rent_df &lt;- rent_df %&gt;% 
+    filter(Location == &quot;New York, NY&quot;) %&gt;% # only keep New York City rows
+    filter(Bedroom_Size == &quot;1br&quot;) %&gt;% # only keep data for 1 bedroom apartment
+    # Location_Type,Bedroom_Size, and Location
+    select(-Location, -Location_Type, -Bedroom_Size) %&gt;%
+    # renaming the dates
+    rename_all(funs(
+        str_replace_all(., 'Price_', '') %&gt;% # remove the &quot;Price_&quot; so lubridate can parse the date
+        lubridate::ymd(., truncated = 2) # parse the dates
+    ))
+
+nyc_rent_df</code></pre>
+<pre><code>##   2014-01-01 2014-10-01 2014-11-01 2014-12-01 2014-02-01 2014-03-01
+## 1       1976       2030       2031       2029       1975       1978
+##   2014-04-01 2014-05-01 2014-06-01 2014-07-01 2014-08-01 2014-09-01
+## 1       1983       1992       2001       2018       2026       2030
+##   2015-01-01 2015-10-01 2015-11-01 2015-12-01 2015-02-01 2015-03-01
+## 1       2023       2069       2065       2058       2023       2027
+##   2015-04-01 2015-05-01 2015-06-01 2015-07-01 2015-08-01 2015-09-01
+## 1       2034       2041       2050       2065       2072       2073
+##   2016-01-01 2016-10-01 2016-11-01 2016-12-01 2016-02-01 2016-03-01
+## 1       2050       2093       2082       2072       2044       2042
+##   2016-04-01 2016-05-01 2016-06-01 2016-07-01 2016-08-01 2016-09-01
+## 1       2047       2051       2054       2061       2070       2093
+##   2017-01-01 2017-10-01 2017-11-01 2017-12-01 2017-02-01 2017-03-01
+## 1       2062       2088       2080       2075       2061       2060
+##   2017-04-01 2017-05-01 2017-06-01 2017-07-01 2017-08-01 2017-09-01
+## 1       2065       2070       2079       2086       2093       2092
+##   2018-01-01 2018-02-01
+## 1       2069       2065</code></pre>
+<p>Currently, there is only one entity in the rent data frame - the prices for New York City. However, we need each entity to be a month and the attribute (column) to be the rent price. So we will transform the data frame using the <code>gather</code> function which transposes the rows and columns.</p>
+<pre class="r"><code>nyc_rent_df &lt;- nyc_rent_df %&gt;% 
+    mutate(Date = &quot;MonthlyRentPrice&quot;) %&gt;% # add a new column that will hold the new column names
+    gather(Date, MonthlyRentPrice) # gather the data so that the columns become the rows
+
+library(readr)
+library(lubridate)</code></pre>
+<pre><code>## 
+## Attaching package: 'lubridate'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     date</code></pre>
+<pre class="r"><code>final_nyc_rent_df &lt;- as_tibble(nyc_rent_df) %&gt;%  # convert to a tibble
+    mutate(Date = ymd(Date)) %&gt;%  # ensure the Date column is a date
+    mutate(NightlyRentPrice = MonthlyRentPrice / 30) %&gt;% 
+    select(-MonthlyRentPrice) # drop the monthly rent price as it is not needed anymore
+
+final_nyc_rent_df</code></pre>
+<pre><code>## # A tibble: 50 x 2
+##    Date       NightlyRentPrice
+##    &lt;date&gt;                &lt;dbl&gt;
+##  1 2014-01-01             65.9
+##  2 2014-10-01             67.7
+##  3 2014-11-01             67.7
+##  4 2014-12-01             67.6
+##  5 2014-02-01             65.8
+##  6 2014-03-01             65.9
+##  7 2014-04-01             66.1
+##  8 2014-05-01             66.4
+##  9 2014-06-01             66.7
+## 10 2014-07-01             67.3
+## # ... with 40 more rows</code></pre>
+<p>We now have our cleaned data frame for the rent data for each month of a 1 bedroom New York City apartment.</p>
+</div>
+<div id="processing-airbnb-data" class="section level4">
+<h4>Processing Airbnb Data</h4>
+<p>For the Airbnb data, we have mutliple CSV files which all need to be merged into one data frame. So first we will clean each CSV file, then get the required information from each CSV, and finally merge the information from each CSV into one data frame.</p>
+<p>We will create a function that loads each CSV into a data frame, and drops all irrelevant information. We only want entries where the <code>room_type</code> is a private room (equivalent to a 1 bedroom apartment). And we only want the nightly price (column named <code>price</code>). Then the median nightly price from each data frame’s nightly prices will be calculated and used as that month’s Airbnb price (remember each CSV file is a month of Airbnb listings). The median is being used as it is not influenced by outliers. Whereas the mean and mode would be subject to outliers and spread within the data. In addition, the Apartment List rent data uses the median from their data.</p>
+<pre class="r"><code>library(dplyr)
+library(stringr)
+library(lubridate)
+library(tidyr)
+
+airbnb_data_dir &lt;- &quot;./airbnbdata&quot;
+
+# create a new data frame to hold the nightly Airbnb price based on all the Airbnb data files
+airbnb_df &lt;- data.frame(Date=as.Date(character()),NightlyAirbnbPrice=double(), stringsAsFactors = FALSE)
+
+airbnb_files &lt;- list.files(airbnb_data_dir, full.names = TRUE)
+for (file in airbnb_files) {
+    df &lt;- read.csv(file) # read the CSV file
+    df &lt;- df %&gt;% 
+        filter(room_type == &quot;Private room&quot;) %&gt;% # keep only the Private rooms
+        select(price) # drop all other columsn other than the nightly price
+    
+    # get rid of the dollar sign so the column can parsed as numeric
+    df$price &lt;- as.numeric(df$price)
+    median_price &lt;- median(df$price) # calculate the median price
+    
+    # get and parse the date from the file name
+    extracted_date &lt;- str_extract(file,&quot;\\d{4}-\\d+&quot;)
+    parsed_date &lt;- ymd(extracted_date, truncated = 2)
+    
+    # now we have the median price, so add the date and median price to the Airbnb data frame
+    airbnb_df &lt;- rbind(airbnb_df, data.frame(Date=parsed_date, NightlyAirbnbPrice=median_price))
+}
+final_nyc_airbnb_df &lt;- as_tibble(airbnb_df)
+final_nyc_airbnb_df</code></pre>
+<pre><code>## # A tibble: 35 x 2
+##    Date       NightlyAirbnbPrice
+##    &lt;date&gt;                  &lt;dbl&gt;
+##  1 2015-01-01               84.0
+##  2 2015-10-01               80.0
+##  3 2015-11-01               80.0
+##  4 2015-12-01               79.0
+##  5 2015-03-01               80.0
+##  6 2015-05-01               85.0
+##  7 2015-06-01               85.0
+##  8 2015-08-01               80.0
+##  9 2015-09-01               80.0
+## 10 2016-01-01               75.0
+## # ... with 25 more rows</code></pre>
+<p>Our last step is make sure both data frames have the same time periods and are in one data frame. If we take a look at the rent data time period, it goes from January 2014 to February 2018. The Airbnb data time period goes from January 2015 to March 2018 with some gaps. Let’s now trim and remove from both data frames so they match in terms of time periods.</p>
+<p>So we will perform an <code>inner_join</code> on the <code>Date</code> to only keep dates appearing in both data frames.</p>
+<pre class="r"><code>library(tidyr)
+
+final_df &lt;- final_nyc_rent_df %&gt;% 
+    inner_join(final_nyc_airbnb_df, by=&quot;Date&quot;)
+
+final_df %&gt;% print(n = Inf)</code></pre>
+<pre><code>## # A tibble: 34 x 3
+##    Date       NightlyRentPrice NightlyAirbnbPrice
+##    &lt;date&gt;                &lt;dbl&gt;              &lt;dbl&gt;
+##  1 2015-01-01             67.4               84.0
+##  2 2015-10-01             69.0               80.0
+##  3 2015-11-01             68.8               80.0
+##  4 2015-12-01             68.6               79.0
+##  5 2015-03-01             67.6               80.0
+##  6 2015-05-01             68.0               85.0
+##  7 2015-06-01             68.3               85.0
+##  8 2015-08-01             69.1               80.0
+##  9 2015-09-01             69.1               80.0
+## 10 2016-01-01             68.3               75.0
+## 11 2016-10-01             69.8               75.0
+## 12 2016-11-01             69.4               75.0
+## 13 2016-12-01             69.1               75.0
+## 14 2016-02-01             68.1               75.0
+## 15 2016-04-01             68.2               75.0
+## 16 2016-05-01             68.4               75.0
+## 17 2016-06-01             68.5               75.0
+## 18 2016-07-01             68.7               75.0
+## 19 2016-08-01             69.0               75.0
+## 20 2016-09-01             69.8               75.0
+## 21 2017-01-01             68.7               75.0
+## 22 2017-10-01             69.6               70.0
+## 23 2017-11-01             69.3               70.0
+## 24 2017-12-01             69.2               70.0
+## 25 2017-02-01             68.7               72.0
+## 26 2017-03-01             68.7               70.5
+## 27 2017-04-01             68.8               72.0
+## 28 2017-05-01             69.0               71.0
+## 29 2017-06-01             69.3               70.0
+## 30 2017-07-01             69.5               71.0
+## 31 2017-08-01             69.8               70.0
+## 32 2017-09-01             69.7               70.0
+## 33 2018-01-01             69.0               70.0
+## 34 2018-02-01             68.8               70.0</code></pre>
+<p>Now we have one data frame with nightly prices for an apartment and an Airbnb for New York City.</p>
+</div>
+</div>
+</div>
+<div id="ii.-exploratory-data-analysis" class="section level2">
+<h2>II. Exploratory Data Analysis</h2>
+<p>Let’s plot the rent prices and Airbnb prices data separately to see how each behaves over three years.</p>
+</div>
+<div id="iii.-machine-learning" class="section level2">
+<h2>III. Machine Learning</h2>
+</div>
+<div id="iv.-conclusion" class="section level2">
+<h2>IV. Conclusion</h2>
+</div>
+<div id="v.-further-reading" class="section level2">
+<h2>V. Further Reading</h2>
+<div id="can-we-predict-monthly-rent-prices-from-airbnb-or-vice-versa" class="section level3">
+<h3>Can we predict monthly rent prices from Airbnb (or vice versa)?</h3>
 </div>
 </div>
 
