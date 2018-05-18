@@ -18,7 +18,7 @@ In [season 2 episode 6](https://www.imdb.com/title/tt4498796/?ref_=ttep_ep6) of 
 
 [Airbnb](https://www.airbnb.com/) is an online marketplace and hospitality service for people to lease or rent short-term lodging. Most regular apartment renting is done through leases which last over a long period of time, usually six months to one year. Airbnbs usually only last a few days to a couple of weeks as it is an alternative to hotels and traditional bed and breakfasts place. Because of the shorter length of stay, Airbnbs are more expensive per night than the per night equivalent of a month's rent for a long term apartment lease. So if Airbnbs start cropping up in below middle class neighborhoods and middle class people rent out those Airbnbs, could that influence landlord's to increase rent prices as the landlords see there are people willing to pay more to rent their property? 
 
-### Question and Methodology - come back to methodology
+### Question and Methodology
 
 As indicated by the title, the main question we are trying to answer is does Airbnb cause rent prices in surrounding areas to increase. So we will subtract the apartment rent price from the Airbnb price (i.e. Airbnb price - aparment price) and looking at the change in differences over a period of time. See the table below for an example.  
 
@@ -368,11 +368,17 @@ Knowing how new technology affects existing people who may not be able to adopt 
 
 See these sources for further reading:
 
+- [Airbnb is making rents in New York City spike as owners yank units off the market](https://www.cnbc.com/2018/01/31/airbnbn-pushing-up-new-york-rent-study-claims.html)
+- [Housing Market Trends: How Airbnb Affects Home Prices and Rents](https://www.mashvisor.com/blog/how-airbnb-affects-home-prices-and-rents/)
+- [There's New Research Behind the Contention that Airbnb Raises Rents](https://www.citylab.com/equity/2017/08/where-airbnb-is-raising-rents/535674/)
+- [How Airbnb Affects Home Prices and Rents](https://www.wsj.com/articles/how-airbnb-affects-home-prices-and-rents-1508724361)
 
 
 ### Sources
 
-- Airbnb
-- Inside Airbnb
-- Apartment List
-- Recode
+- (Airbnb)[www.airbnb.com]
+- (Inside Airbnb)[http://insideairbnb.com/get-the-data.html]
+- (Apartment List)[https://www.apartmentlist.com/rentonomics/rental-price-data/]
+- (Recode)[https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry]
+- (Tidyverse)[https://www.tidyverse.org/]
+- (Broom)[https://cran.r-project.org/web/packages/broom/vignettes/broom.html]
