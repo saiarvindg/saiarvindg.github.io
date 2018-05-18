@@ -90,7 +90,7 @@ airbnb_data_links %>% head()
 
 Now that we have all the links to the zipped CSV files, we can download them into a directory. We will write a function that extracts the date from the link, parses the date using `lubridate`, uses the parsed date to create a new file, and downloads the CSV file into the newly created file.
 
-```{r get_airbnb_date, eval=FALSE, message=FALSE, warning=FALSE}
+```{r get_airbnb_date, eval=TRUE, message=FALSE, warning=FALSE}
 # folder where all the unzipped CSV files will go
 airbnb_data_dir <- "./airbnbdata"
 
@@ -98,7 +98,7 @@ library(lubridate)
 
 # invisible() just suppresses output
 # use the airbnb_data_link from above
-invisible(sapply(two_links, function(link) {
+invisible(sapply(airbnb_data_links, function(link) {
 	extracted_date <- str_extract(link,"\\d{4}-\\d{2}-\\d{2}") # extract the date from the link
 	parsed_date <- ymd(extracted_date) # parse date with lubridate
 	
@@ -286,8 +286,6 @@ As the data is recent, I do not feel there is a need to standardize or account f
 
 ## III. Hypothesis Testing and Machine Learning
 
-### Hypothesis Testing
-
 We are going to test if Airbnb has an effect on apartment prices with hypothesis testing on the differences in the prices of Airbnb and apartments.
 
 Our null hypothesis will be that Airbnb _does not_ have an effect on apartment prices, so the difference in prices would be zero: $H_o = 0$. The alternative hypothesis will be that Airbnb _does_ have an effect on apartment prices, so difference in prices would be positive: $H_a > 0$. We will be using the t-test to test our hypothesis. We are using the t-test because the population variance is unknown and the sample size is small. However, the t-test also assumes that the underlying variables come from a normal distribution. We can check by looking at the normal probabilty plot (NPP) and the reference line.
@@ -376,9 +374,10 @@ See these sources for further reading:
 
 ### Sources
 
-- (Airbnb)[www.airbnb.com]
-- (Inside Airbnb)[http://insideairbnb.com/get-the-data.html]
-- (Apartment List)[https://www.apartmentlist.com/rentonomics/rental-price-data/]
-- (Recode)[https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry]
-- (Tidyverse)[https://www.tidyverse.org/]
+- [Airbnb](www.airbnb.com)
+- [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
+- [Apartment List](https://www.apartmentlist.com/rentonomics/rental-price-data/)
+- [Recode](https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry)
+- [Apartment Guide](https://www.apartmentguide.com/blog/is-there-an-ideal-season-to-rent-an-apartment)
+- [Tidyverse](https://www.tidyverse.org/)
 - (Broom)[https://cran.r-project.org/web/packages/broom/vignettes/broom.html]
