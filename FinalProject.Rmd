@@ -380,4 +380,4 @@ See these sources for further reading:
 - [Recode](https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry)
 - [Apartment Guide](https://www.apartmentguide.com/blog/is-there-an-ideal-season-to-rent-an-apartment)
 - [Tidyverse](https://www.tidyverse.org/)
-- (Broom)[https://cran.r-project.org/web/packages/broom/vignettes/broom.html]
+- [Broom](https://cran.r-project.org/web/packages/broom/vignettes/broom.html)

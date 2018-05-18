@@ -437,6 +437,8 @@ invisible(sapply(airbnb_data_links, function(link) {
 }))
 
 list.files(airbnb_data_dir) %&gt;% head()</code></pre>
+<pre><code>## [1] &quot;2015-1.csv&quot;  &quot;2015-10.csv&quot; &quot;2015-11.csv&quot; &quot;2015-12.csv&quot; &quot;2015-3.csv&quot; 
+## [6] &quot;2015-5.csv&quot;</code></pre>
 </div>
 </div>
 <div id="ii.-data-processing" class="section level3">
@@ -487,13 +489,9 @@ nyc_rent_df</code></pre>
     gather(Date, MonthlyRentPrice) # gather the data so that the columns become the rows
 
 library(readr)
-library(lubridate)</code></pre>
-<pre><code>## 
-## Attaching package: 'lubridate'</code></pre>
-<pre><code>## The following object is masked from 'package:base':
-## 
-##     date</code></pre>
-<pre class="r"><code>final_nyc_rent_df &lt;- as_tibble(nyc_rent_df) %&gt;%  # convert to a tibble
+library(lubridate)
+
+final_nyc_rent_df &lt;- as_tibble(nyc_rent_df) %&gt;%  # convert to a tibble
     mutate(Date = ymd(Date)) %&gt;%  # ensure the Date column is a date
     mutate(NightlyRentPrice = MonthlyRentPrice / 30) %&gt;% 
     select(-MonthlyRentPrice) # drop the monthly rent price as it is not needed anymore
@@ -889,7 +887,7 @@ resid_plot</code></pre>
 <li><a href="https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry">Recode</a></li>
 <li><a href="https://www.apartmentguide.com/blog/is-there-an-ideal-season-to-rent-an-apartment">Apartment Guide</a></li>
 <li><a href="https://www.tidyverse.org/">Tidyverse</a></li>
-<li>(Broom)[<a href="https://cran.r-project.org/web/packages/broom/vignettes/broom.html" class="uri">https://cran.r-project.org/web/packages/broom/vignettes/broom.html</a>]</li>
+<li><a href="https://cran.r-project.org/web/packages/broom/vignettes/broom.html">Broom</a></li>
 </ul>
 </div>
 </div>
