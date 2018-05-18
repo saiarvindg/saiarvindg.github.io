@@ -422,7 +422,7 @@ library(lubridate)
 
 # invisible() just suppresses output
 # use the airbnb_data_link from above
-invisible(sapply(two_links, function(link) {
+invisible(sapply(airbnb_data_links, function(link) {
     extracted_date &lt;- str_extract(link,&quot;\\d{4}-\\d{2}-\\d{2}&quot;) # extract the date from the link
     parsed_date &lt;- ymd(extracted_date) # parse date with lubridate
     
@@ -663,8 +663,6 @@ diff_plot</code></pre>
 </div>
 <div id="iii.-hypothesis-testing-and-machine-learning" class="section level2">
 <h2>III. Hypothesis Testing and Machine Learning</h2>
-<div id="hypothesis-testing" class="section level3">
-<h3>Hypothesis Testing</h3>
 <p>We are going to test if Airbnb has an effect on apartment prices with hypothesis testing on the differences in the prices of Airbnb and apartments.</p>
 <p>Our null hypothesis will be that Airbnb <em>does not</em> have an effect on apartment prices, so the difference in prices would be zero: <span class="math inline">\(H_o = 0\)</span>. The alternative hypothesis will be that Airbnb <em>does</em> have an effect on apartment prices, so difference in prices would be positive: <span class="math inline">\(H_a &gt; 0\)</span>. We will be using the t-test to test our hypothesis. We are using the t-test because the population variance is unknown and the sample size is small. However, the t-test also assumes that the underlying variables come from a normal distribution. We can check by looking at the normal probabilty plot (NPP) and the reference line.</p>
 <pre class="r"><code>qqnorm(diff_df$diff)
@@ -685,7 +683,6 @@ t_test</code></pre>
 ## mean of x 
 ##  6.122549</code></pre>
 <p>Since the p-value is less than 0.05, the null hypothesis is rejected. So we know that Airbnb has an effect on apartment prices as the alternative hypothesis was not rejected.</p>
-</div>
 <div id="machine-learning" class="section level3">
 <h3>Machine Learning</h3>
 <p>Now let’s attempt to come with a linear regression model for the relationship between apartment prices and Airbnb prices. We want to see the effect of Airbnb on apartment prices, so the relationship is modeled as such: <span class="math inline">\(apt \ price = \beta_0 + \beta_1 * Airbnb \ price\)</span>. Since both variables are numeric and continous, and this is not a classification problem, we can use a linear regression model.</p>
@@ -886,11 +883,12 @@ resid_plot</code></pre>
 <div id="sources" class="section level3">
 <h3>Sources</h3>
 <ul>
-<li>(Airbnb)[www.airbnb.com]</li>
-<li>(Inside Airbnb)[<a href="http://insideairbnb.com/get-the-data.html" class="uri">http://insideairbnb.com/get-the-data.html</a>]</li>
-<li>(Apartment List)[<a href="https://www.apartmentlist.com/rentonomics/rental-price-data/" class="uri">https://www.apartmentlist.com/rentonomics/rental-price-data/</a>]</li>
-<li>(Recode)[<a href="https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry" class="uri">https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry</a>]</li>
-<li>(Tidyverse)[<a href="https://www.tidyverse.org/" class="uri">https://www.tidyverse.org/</a>]</li>
+<li><a href="www.airbnb.com">Airbnb</a></li>
+<li><a href="http://insideairbnb.com/get-the-data.html">Inside Airbnb</a></li>
+<li><a href="https://www.apartmentlist.com/rentonomics/rental-price-data/">Apartment List</a></li>
+<li><a href="https://www.recode.net/2017/7/19/15949782/airbnb-100-million-stays-2017-threat-business-hotel-industry">Recode</a></li>
+<li><a href="https://www.apartmentguide.com/blog/is-there-an-ideal-season-to-rent-an-apartment">Apartment Guide</a></li>
+<li><a href="https://www.tidyverse.org/">Tidyverse</a></li>
 <li>(Broom)[<a href="https://cran.r-project.org/web/packages/broom/vignettes/broom.html" class="uri">https://cran.r-project.org/web/packages/broom/vignettes/broom.html</a>]</li>
 </ul>
 </div>
